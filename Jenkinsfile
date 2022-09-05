@@ -8,10 +8,15 @@ pipeline {
         sh '"mvn" -Dmaven.test.failure.ignore clean install'
       }
     }
-    stage('Deploy') {
-      steps {   
-         deploy adapters: [tomcat8(credentialsId: 'tomcatcredentials', path: '', url: 'http://3.109.186.143:8080')], contextPath: 'javaapp', war: '**/**.war'
-      }
+    stage('SonarQube analysis') {
+//    def scannerHome = tool 'SonarScanner 4.0';
+        steps{
+        withSonarQubeEnv('sonarqube-8.9.2') { 
+        // If you have configured more than one global server connection, you can specify its name
+//      sh "${scannerHome}/bin/sonar-scanner"
+        sh "mvn sonar:sonar"
     }
+        }
+        }
   }
 }
