@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        dockerImage = docker.build registry
+        docker build
       }
     }
   }
