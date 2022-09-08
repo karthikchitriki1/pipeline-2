@@ -1,7 +1,7 @@
 pipeline {
   environment {
     registry = "docker_hub_account/tomcat"
-    registryCredential = ‘dockerhub’
+    registryCredential = "dockerhub"
 }
   agent any
   stages {
