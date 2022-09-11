@@ -1,21 +1,14 @@
-FROM tomcat:9.0
+FROM centos
+RUN mkdir /opt/tomcat/
+WORKDIR /opt/tomcat
+RUN curl -O https://www-eu.apache.org/dist/tomcat/tomcat-8/v8.5.40/bin/apache-tomcat-8.5.40.tar.gz
+RUN tar xvfz apache*.tar.gz
+RUN mv apache-tomcat-8.5.40/* /opt/tomcat/.
+RUN yum -y install java
+RUN java -version
 
-WORKDIR /usr/local/tomcat
-
-User root
-
-RUN mv /usr/local/tomcat/webapps /usr/local/tomcat/webapps2
-
-RUN mv /usr/local/tomcat/webapps.dist/ webapps
-
-ADD ./target/dptweb-1.0.war /usr/local/tomcat/webapps/
-
-COPY tomcat-users.xml /usr/local/tomcat/conf/
-
-COPY context.xml /usr/local/tomcat/webapps/manager/META-INF/
-
-COPY context.xml /usr/local/tomcat/webapps/host-manager/META-INF/
+WORKDIR /opt/tomcat/webapps
 
 EXPOSE 8080
 
-CMD ["catalina.sh", "run"]
+CMD ["/opt/tomcat/bin/catalina.sh", "run"]
