@@ -16,6 +16,11 @@ pipeline {
                 }   
             }
         }
+         stage('Build') {
+           steps {
+            sh '"mvn" -Dmaven.test.failure.ignore clean install'
+              }
+        }
     // Building Docker images
     stage('Building image') {
       steps{
