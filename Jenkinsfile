@@ -40,15 +40,16 @@ pipeline {
         }
     }
         stage("Deploy to EKS") {
-      steps {      
-      //sh 'aws eks update-kubeconfig --name demo-eks --region ap-south-1'//
+      steps {
+          withKubeConfig(caCertificate: '', clusterName: 'demo-eks', contextName: '', credentialsId: 'kube', namespace: '', serverUrl: '')
+          sh 'aws eks update-kubeconfig --name demo-eks --region ap-south-1'
           sh '''if /usr/local/bin/kubectl get deploy | grep tomcat
-                then
-                /usr/local/bin/kubectl set image deployment tomcat=536009196338.dkr.ecr.ap-south-1.amazonaws.com/tomcat:latest
-               /usr/local/bin/kubectl rollout restart deployment tomcat
-                else
-                /usr/local/bin/kubectl apply -f deployment.yml
-                fi'''
+          then
+          /usr/local/bin/kubectl set image deployment tomcat=536009196338.dkr.ecr.ap-south-1.amazonaws.com/tomcat:latest
+          /usr/local/bin/kubectl rollout restart deployment tomcat
+          else
+          /usr/local/bin/kubectl apply -f deployment.yml
+          fi'''
     }            
     }
     
