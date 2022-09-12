@@ -41,7 +41,7 @@ pipeline {
     }
         stage("Deploy to EKS") {
             steps {
-                withCredentials([string(credentialsId: 'kubes', variable: 'kube')]) {  
+                withCredentials([file(credentialsId: 'kubes', variable: 'kubes')]) {  
                 //sh 'aws eks update-kubeconfig --name demo-eks --region ap-south-1'
                 sh '''if /home/ubuntu/bin/kubectl get deploy | grep tomcat
                 then
