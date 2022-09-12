@@ -41,7 +41,6 @@ pipeline {
     }
         stage("Deploy to EKS") {
       steps {      
-    withKubeConfig(caCertificate: '', clusterName: 'demo-eks', contextName: '', credentialsId: 'kube', namespace: '', serverUrl: '') {
       sh 'aws eks update-kubeconfig --name demo-eks --region ap-south-1'
           sh '''if /var/lib/jenkins/bin/kubectl get deploy | grep tomcat
                 then
@@ -51,7 +50,6 @@ pipeline {
                 /var/lib/jenkins/bin/kubectl apply -f deployment.yml
                 fi'''
     }            
-      }
     }
     
     stage("Wait for Deployments") {
