@@ -40,24 +40,23 @@ pipeline {
         }
     }
         stage("Deploy to EKS") {
-      steps {
-          withCredentials([string(credentialsId: 'kubes', variable: 'kube')]) {
-              //sh 'aws eks update-kubeconfig --name demo-eks --region ap-south-1'//
-          sh '''if kubectl get deploy | grep tomcat
-          then
-          kubectl set image deployment tomcat=536009196338.dkr.ecr.ap-south-1.amazonaws.com/tomcat:latest
-          kubectl rollout restart deployment tomcat
-          else
-          kubectl apply -f deployment.yml
-          fi'''
-          }
-    }            
-    }
-    
+            steps {
+                withCredentials([string(credentialsId: 'kubes', variable: 'kube')]) {  
+                sh 'aws eks update-kubeconfig --name eks-jenkins-cluster --region us-east-1'
+                sh '''if /home/ubuntu/bin/kubectl get deploy | grep java-login-app
+                then
+                /home/ubuntu/bin/kubectl set image deployment jenkins-pipeline-build-demo java-app=022766710761.dkr.ecr.us-east-1.amazonaws.com/jenkins-pipeline-build-demo:latest
+                /home/ubuntu/bin/kubectl rollout restart deployment java-login-app
+                else
+                /home/ubuntu/bin/kubectl apply -f deployment.yml
+                fi'''
+                }            
+            }
+        }
     stage("Wait for Deployments") {
       steps {
         timeout(time: 2, unit: 'MINUTES') {
-          sh '/usr/local/bin/kubectl get svc'
+          sh '/home/ubuntu/bin/kubectl get svc'
         }
       }
     }  
