@@ -42,8 +42,8 @@ pipeline {
         stage("Deploy to EKS") {
             steps {
                 withCredentials([string(credentialsId: 'kubes', variable: 'kube')]) {  
-                sh 'aws eks update-kubeconfig --name demo-eks --region us-east-1'
-                sh '''if /home/ubuntu/bin/kubectl get deploy | grep java-login-app
+                sh 'aws eks update-kubeconfig --name demo-eks --region ap-south-1'
+                sh '''if /home/ubuntu/bin/kubectl get deploy | grep tomcat
                 then
                 /home/ubuntu/bin/kubectl set image deployment tomcat= 536009196338.dkr.ecr.ap-south-1.amazonaws.com/tomcat:latest
                 /home/ubuntu/bin/kubectl rollout restart deployment tomcat
