@@ -41,24 +41,14 @@ pipeline {
     }
         stage("Deploy to EKS") {
             steps {
-                withCredentials([file(credentialsId: 'kubes', variable: 'kubectl')]) {
-                    sh 'aws eks update-kubeconfig --name demo-eks --region ap-south-1'
-                    sh '''if /home/ubuntu/bin/kubectl get deploy | grep java-login-app
-                    then
-                    /home/ubuntu/bin/kubectl set image deployment tomcat= 536009196338.dkr.ecr.ap-south-1.amazonaws.com/tomcat:latest
-                    /home/ubuntu/bin/kubectl rollout restart deployment java-login-app
-                    else
-                    /home/ubuntu/bin/kubectl apply -f deployment.yml
-                    fi'''
-                }            
+                kubernetesDeploy(configs: "deployment.yml", kubeconfigId: "kubes")           
             }
         }
-    stage("Wait for Deployments") {
-      steps {
-        timeout(time: 2, unit: 'MINUTES') {
-          sh '/home/ubuntu/bin/kubectl get svc'
-        }
-      }
-    }  
-  }
-}
+        stage("Wait for Deployments") {
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    sh '/home/ubuntu/bin/kubectl get svc'
+                }
+            }
+        }  
+    }
