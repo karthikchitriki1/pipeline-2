@@ -38,6 +38,7 @@ pipeline {
                 sh "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"
          }
         }
+    }
          stage("Deploy to EKS") {
       steps {
     withKubeConfig(caCertificate: '', clusterName: 'demo-eks', contextName: '', credentialsId: 'kube', namespace: '', serverUrl: '') {
@@ -49,9 +50,9 @@ pipeline {
                 else
                 /var/lib/jenkins/bin/kubectl apply -f deployment.yml
                 fi'''
-    }            
-      }
     }
+      }
+         }
     
     stage("Wait for Deployments") {
       steps {
@@ -61,4 +62,3 @@ pipeline {
       }
     }  
   }
-}
