@@ -43,12 +43,12 @@ pipeline {
       steps {
           withCredentials([string(credentialsId: 'kubes', variable: 'kube')]) {
               //sh 'aws eks update-kubeconfig --name demo-eks --region ap-south-1'//
-          sh '''if /usr/local/bin/kubectl get deploy | grep tomcat
+          sh '''if kubectl get deploy | grep tomcat
           then
-          /usr/local/bin/kubectl set image deployment tomcat=536009196338.dkr.ecr.ap-south-1.amazonaws.com/tomcat:latest
-          /usr/local/bin/kubectl rollout restart deployment tomcat
+          kubectl set image deployment tomcat=536009196338.dkr.ecr.ap-south-1.amazonaws.com/tomcat:latest
+          kubectl rollout restart deployment tomcat
           else
-          /usr/local/bin/kubectl apply -f deployment.yml
+          kubectl apply -f deployment.yml
           fi'''
           }
     }            
