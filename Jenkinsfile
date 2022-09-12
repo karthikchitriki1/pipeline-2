@@ -41,22 +41,22 @@ pipeline {
     }
         stage("Deploy to EKS") {
             steps {
-                withCredentials([file(credentialsId: 'kubes', variable: 'kubes')]) {  
-                //sh 'aws eks update-kubeconfig --name demo-eks --region ap-south-1'
-                sh '''if /home/ubuntu/bin/kubectl get deploy | grep tomcat
-                then
-                /home/ubuntu/bin/kubectl set image deployment tomcat= 536009196338.dkr.ecr.ap-south-1.amazonaws.com/tomcat:latest
-                /home/ubuntu/bin/kubectl rollout restart deployment tomcat
-                else
-                /home/ubuntu/bin/kubectl apply -f deployment.yml
-                fi'''
+                withKubeConfig(caCertificate: '', clusterName: 'demo-eks', contextName: '', credentialsId: 'kubes', namespace: '', serverUrl: '') {
+                    sh 'aws eks update-kubeconfig --name demo-eks --region ap-south-1'
+                    sh '''if /var/lib/jenkins/bin/kubectl get deploy | grep java-login-app
+                    then
+                    /var/lib/jenkins/bin/kubectl set image deployment java-login-app= 536009196338.dkr.ecr.ap-south-1.amazonaws.com/tomcat:latest
+                    /var/lib/jenkins/bin/kubectl rollout restart deployment java-login-app
+                    else
+                    /var/lib/jenkins/bin/kubectl apply -f deployment.yml
+                    fi'''
                 }            
             }
         }
     stage("Wait for Deployments") {
       steps {
         timeout(time: 2, unit: 'MINUTES') {
-          sh '/home/ubuntu/bin/kubectl get svc'
+          sh '/var/lib/jenkins/bin/kubectl get svc'
         }
       }
     }  
