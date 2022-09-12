@@ -38,6 +38,27 @@ pipeline {
                 sh "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"
          }
         }
+         stage("Deploy to EKS") {
+      steps {
+    withKubeConfig(caCertificate: '', clusterName: 'demo-eks', contextName: '', credentialsId: 'kube', namespace: '', serverUrl: '') {
+      sh 'aws eks update-kubeconfig --name eks-jenkins-cluster --region us-east-1'
+          sh '''if /var/lib/jenkins/bin/kubectl get deploy | grep java-login-app
+                then
+                /var/lib/jenkins/bin/kubectl set image deployment tomcat=536009196338.dkr.ecr.ap-south-1.amazonaws.com/tomcat:latest
+               /var/lib/jenkins/bin/kubectl rollout restart deployment java-login-app
+                else
+                /var/lib/jenkins/bin/kubectl apply -f deployment.yml
+                fi'''
+    }            
       }
     }
+    
+    stage("Wait for Deployments") {
+      steps {
+        timeout(time: 2, unit: 'MINUTES') {
+          sh '/var/lib/jenkins/bin/kubectl get svc'
+        }
+      }
+    }  
+  }
 }
