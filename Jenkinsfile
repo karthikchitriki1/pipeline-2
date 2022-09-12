@@ -41,6 +41,7 @@ pipeline {
     }
         stage("Deploy to EKS") {
             steps {
+                withCredentials([file(credentialsId: 'kubes', variable: 'kubectl')]) {
                     sh 'aws eks update-kubeconfig --name demo-eks --region ap-south-1'
                     sh '''if /home/ubuntu/bin/kubectl get deploy | grep java-login-app
                     then
@@ -51,6 +52,7 @@ pipeline {
                     fi'''
                 }            
             }
+        }
     stage("Wait for Deployments") {
       steps {
         timeout(time: 2, unit: 'MINUTES') {
